@@ -193,6 +193,10 @@ p {
   display: block
 }
 
+.content-panel p {
+  font-size: clamp(6px, 5cqmin, 12px); line-height: 1.4;
+}
+
 .image-label {
   display: block;
   object-fit: contain;

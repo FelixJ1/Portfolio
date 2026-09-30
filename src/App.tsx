@@ -289,14 +289,16 @@ export default function App(): React.JSX.Element {
   function NodeView({ node, box }: { node: PortfolioNode, box: ContentBox }) {
   switch (node.type) {
     case "text":
+      const height = mobile ? 120 : 100
+      const top = mobile ? 90 : 100
       return (
         <div
           className={`content-panel ${visible ? '' : 'is-hidden'}`}
           style={{
             left: `${box.left * 100}%`,
-            top: `${box.top * 100}%`,
+            top: `${box.top * top}%`,
             width: `${box.width * 100}%`,
-            height: `${box.height * 100}%`,
+            height: `${box.height * height}%`,
             color: fgColor,
           }}
         >
@@ -372,6 +374,7 @@ export default function App(): React.JSX.Element {
 }
 
   const [uiScale, setUiScale] = useState(1);
+  const [mobile, setMobile] = useState(window.innerWidth < 800);
   const [labelGap, setLabelGap] = useState(16);
   const isPentagon = faceType === 'pentagon';
   const fgColor = isPentagon ? '#f5f5f0' : '#101012';
