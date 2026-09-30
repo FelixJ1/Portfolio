@@ -349,7 +349,6 @@ export default function App(): React.JSX.Element {
             width: `${box.width * 100}%`,
             height: `${box.height * 100}%`,
             color: fgColor,
-            gap: '2rem',
           }}
         >
         <h1>{currentNode.title}</h1>

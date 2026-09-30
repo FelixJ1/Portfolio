@@ -161,7 +161,8 @@ export class PortfolioBall {
   private getBaseZ(): number {
   const DESKTOP_Z = 5.5;
   const ZOOM_BREAKPOINTS = [
-    { maxWidth: 480, zoom: 0.6 },
+    { maxWidth: 460, zoom: 0.6 },
+    { maxWidth: 480, zoom: 0.65 },
     { maxWidth: 768, zoom: 0.75 },
     { maxWidth: Infinity, zoom: 1 },
   ];

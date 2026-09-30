@@ -2,6 +2,15 @@
 html, body, #root { height: 100%; margin: 0;}
 body { font-family: system-ui, -apple-system, sans-serif; }
 
+h1 {
+  margin: 0;
+  margin-block: 0;
+}
+
+p {
+  margin: 0
+}
+
 .app-root {
   position: relative;
   width: 100vw;
@@ -30,6 +39,7 @@ body { font-family: system-ui, -apple-system, sans-serif; }
   transition: opacity 0.26s ease;
   z-index: 4;
   overflow: hidden;
+  gap: 6cqmin;
 }
 .content-panel.is-hidden {
   opacity: 0;
@@ -182,6 +192,7 @@ body { font-family: system-ui, -apple-system, sans-serif; }
 .image-label {
   display: block;
   object-fit: contain;
+  aspect-ratio: inherit;
   width: 20px;
   height: 20px;
   border: none;
@@ -192,4 +203,6 @@ body { font-family: system-ui, -apple-system, sans-serif; }
 .edge-arrow-label { font-size: calc(0.75rem * var(--ui)); }
 .portfolio-reset  { font-size: calc(0.9rem * var(--ui)); padding: calc(10px * var(--ui)) calc(16px * var(--ui)); }
 .edge-arrow-group { --hit: max(44px, calc(80px * var(--ui))); width: var(--hit); height: var(--hit); }
-
+.grid-item {
+  font-size: calc(1rem * var(--ui));
+}
