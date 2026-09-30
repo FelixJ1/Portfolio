@@ -125,7 +125,12 @@ export default function App(): React.JSX.Element {
 
   const refreshFaceUI = useCallback((faceId: number): void => {
     const ball = ballRef.current;
-    if (!ball) return;
+    const el = containerRef.current;
+    if (!ball || !el) return;
+
+    const minSide = Math.min(el.clientWidth, el.clientHeight);
+    setUiScale(Math.min(1, Math.max(0.65, minSide / 800)));
+    setLabelGap(el.clientWidth > 800 ? 16 : 8)
 
     setFaceType(ball.getFaceType(faceId) as FaceType);
     setArrows(ball.getFaceEdgeArrows(faceId));
@@ -359,14 +364,15 @@ export default function App(): React.JSX.Element {
   }
 }
 
+  const [uiScale, setUiScale] = useState(1);
+  const [labelGap, setLabelGap] = useState(16);
   const isPentagon = faceType === 'pentagon';
   const fgColor = isPentagon ? '#f5f5f0' : '#101012';
 
-  const LABEL_GAP_PX = 20;   // distance from the arrow's centre to the label's near edge
-  const LABEL_SIDE = -1;     // -1 = label sits behind the arrow (toward face centre), 1 = ahead of it
+  const LABEL_SIDE = -1;
 
   return (
-    <div className="app-root">
+    <div className="app-root" style={{ '--ui': uiScale } as React.CSSProperties}>
       <div ref={containerRef} className="ball-canvas" />
 
 {visibleArrows.map((arrow) => {
@@ -381,13 +387,12 @@ export default function App(): React.JSX.Element {
       onClick={() => handleArrowClick(arrow)}
       style={{
         position: 'absolute',
-        left: `calc(${arrow.x * 100}% - 40px)`,
-        top: `calc(${arrow.y * 100}% - 40px)`,
+        left: `calc(${arrow.x * 100}% - var(--hit) / 2)`,
+        top:  `calc(${arrow.y * 100}% - var(--hit) / 2)`,
         color: fgColor,
       }}
     >
-      <button
-        type="button"
+      <div
         className="edge-arrow"
         style={{
           position: 'absolute',
@@ -397,10 +402,8 @@ export default function App(): React.JSX.Element {
           bottom: 'auto',
           transform: `translate(-50%, -50%) rotate(${arrow.angle}deg)`,
         }}
-        onClick={() => handleArrowClick(arrow)}
-        aria-label={`Go to ${arrow.option.title}`}
       >
-        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <svg viewBox="0 0 24 24"  aria-hidden="true">
           <path
             d="M4 12h14M12 5l7 7-7 7"
             fill="none"
@@ -410,12 +413,10 @@ export default function App(): React.JSX.Element {
             strokeLinejoin="round"
           />
         </svg>
-      </button>
+      </div>
 
-      <button
-        type="button"
+      <div
         className="edge-arrow-label"
-        onClick={() => handleArrowClick(arrow)}
         style={{
           position: 'absolute',
           left: '50%',
@@ -423,12 +424,12 @@ export default function App(): React.JSX.Element {
           right: 'auto',
           bottom: 'auto',
           transform:
-            `translate(${ux * LABEL_GAP_PX}px, ${uy * LABEL_GAP_PX}px) ` +
+            `translate(${ux * labelGap}px, ${uy * labelGap}px) ` +
             `translate(${-50 + ux * 50}%, ${-50 + uy * 50}%)`,
         }}
       >
         {arrow.option.title}
-      </button>
+      </div>
     </button>
   );
 })}

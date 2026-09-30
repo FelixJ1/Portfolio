@@ -158,6 +158,18 @@ export class PortfolioBall {
     this.animationFrameId = window.requestAnimationFrame(this.tick);
   }
 
+  private getBaseZ(): number {
+  const DESKTOP_Z = 5.5;
+  const ZOOM_BREAKPOINTS = [
+    { maxWidth: 480, zoom: 0.6 },
+    { maxWidth: 768, zoom: 0.75 },
+    { maxWidth: Infinity, zoom: 1 },
+  ];
+  const w = this.container.clientWidth;
+  const { zoom } = ZOOM_BREAKPOINTS.find((b) => w <= b.maxWidth)!;
+  return DESKTOP_Z / zoom;
+}
+
   private initScene(): void {
     const width = this.container.clientWidth;
     const height = this.container.clientHeight;
@@ -194,8 +206,8 @@ export class PortfolioBall {
 
   private startIntroZoom(): void {
     this.introAnim = {
-      startZ: 15,
-      endZ: 5.5,
+      startZ: this.getBaseZ() * 2.7,
+      endZ: this.getBaseZ(),
       startTime: performance.now(),
       duration: 1600,
     };
