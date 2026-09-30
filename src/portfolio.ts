@@ -1,5 +1,3 @@
-import { label } from "three/tsl";
-
 export type PortfolioImage = {
   src: string;
   alt: string;
