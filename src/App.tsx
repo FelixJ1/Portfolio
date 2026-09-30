@@ -374,7 +374,7 @@ export default function App(): React.JSX.Element {
 }
 
   const [uiScale, setUiScale] = useState(1);
-  const [mobile, setMobile] = useState(window.innerWidth < 800);
+  const mobile = window.innerWidth < 800;
   const [labelGap, setLabelGap] = useState(16);
   const isPentagon = faceType === 'pentagon';
   const fgColor = isPentagon ? '#f5f5f0' : '#101012';
