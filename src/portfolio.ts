@@ -12,11 +12,13 @@ export type PortfolioLink = {
 export type PortfolioNode = {
   id: string;
   type: string;
-  title?: string;
+  title: string;
+  shortTitle?: string;
   body?: string;
   backgroundSrc?: string;
   images?: PortfolioImage[];
   links?: PortfolioLink[];
+  arrowSrc?: string;
   children: PortfolioNode[];
 };
 
@@ -139,6 +141,7 @@ const portfolioTree: PortfolioNode = {
       id: 'web-development',
       type: 'text',
       title: 'Other websites',
+      shortTitle: 'Other',
       body: 'Responsive websites and interactive front-end experiences built with React and JavaScript.',
       children: [
         {

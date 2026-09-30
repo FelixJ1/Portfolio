@@ -29,7 +29,8 @@ type LinkContent = {
 export type PortfolioNode = {
   id: string;
   type: string;
-  title?: string;
+  title: string;
+  shortTitle?: string;
   body?: string;
   backgroundSrc?: string;
   images?: ImageContent[];
@@ -46,6 +47,8 @@ type ChildNavigationOption = {
   type: 'child';
   id: string;
   title: string;
+  shortTitle?: string;
+  src?: string; 
   node: PortfolioNode;
 };
 
@@ -53,6 +56,8 @@ type BackNavigationOption = {
   type: 'back';
   id: '__back__';
   title: string;
+  shortTitle?: string;
+  src?: string; 
 };
 
 type NavigationOption = ChildNavigationOption | BackNavigationOption;
@@ -212,7 +217,9 @@ export default function App(): React.JSX.Element {
       (node): ChildNavigationOption => ({
         type: 'child',
         id: node.id,
-        title: node.title ?? node.id,
+        title: node.title,
+        shortTitle: node.shortTitle ?? node.title,
+        src: node.backgroundSrc,
         node,
       }),
     );
@@ -222,6 +229,7 @@ export default function App(): React.JSX.Element {
         type: 'back',
         id: '__back__',
         title: 'Back',
+        shortTitle: 'Back',
       });
     }
 
@@ -300,7 +308,7 @@ export default function App(): React.JSX.Element {
             }}
           />
           <div className="content-panel-body">
-            {currentNode.title && <h1>{currentNode.title}</h1>}
+            <h1>{currentNode.title}</h1>
             <p>{node.body}</p>
           </div>
         </div>
@@ -337,14 +345,14 @@ export default function App(): React.JSX.Element {
           className={`content-panel ${visible ? '' : 'is-hidden'}`}
           style={{
             left: `${box.left * 100}%`,
-            top: `${box.top * 80}%`,
+            top: `${box.top * 90}%`,
             width: `${box.width * 100}%`,
             height: `${box.height * 100}%`,
             color: fgColor,
             gap: '2rem',
           }}
         >
-        {currentNode.title && <h1>{currentNode.title}</h1>}
+        <h1>{currentNode.title}</h1>
 
 
         <div className="grid-3">
@@ -428,7 +436,16 @@ export default function App(): React.JSX.Element {
             `translate(${-50 + ux * 50}%, ${-50 + uy * 50}%)`,
         }}
       >
-        {arrow.option.title}
+        <div className="text-label">
+          {arrow.option.title}
+        </div>
+        {arrow.option.src ? 
+          <img className="image-label" src={arrow.option.src}/>
+          :
+          <div className="shortened-label">
+            {arrow.option.shortTitle}
+          </div>
+        }
       </div>
     </button>
   );
