@@ -159,17 +159,13 @@ export class PortfolioBall {
   }
 
   private getBaseZ(): number {
-  const DESKTOP_Z = 5.5;
-  const ZOOM_BREAKPOINTS = [
-    { maxWidth: 460, zoom: 0.6 },
-    { maxWidth: 480, zoom: 0.65 },
-    { maxWidth: 768, zoom: 0.75 },
-    { maxWidth: Infinity, zoom: 1 },
-  ];
-  const w = this.container.clientWidth;
-  const { zoom } = ZOOM_BREAKPOINTS.find((b) => w <= b.maxWidth)!;
-  return DESKTOP_Z / zoom;
-}
+    const DESKTOP_Z = 5.5;
+    const MOBILE_Z = 4.5
+    const aspect = this.container.clientWidth / this.container.clientHeight;
+    // Landscape or square: keep the desktop distance.
+    // Portrait: scale distance up as the screen gets narrower.
+    return aspect >= 1 ? DESKTOP_Z : MOBILE_Z / aspect;
+  }
 
   private initScene(): void {
     const width = this.container.clientWidth;

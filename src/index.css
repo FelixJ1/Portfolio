@@ -74,6 +74,15 @@ p {
   left: 1rem;
   bottom: 1rem;
   z-index: 10;
+  background: none;
+  color: #fff;
+  border: 1px #ffffff6c solid;
+  cursor: pointer;
+  transition: opacity 260ms ease;
+}
+
+.portfolio-reset:hover {
+  opacity: 0.5;
 }
 
 .edge-arrow-group {
@@ -205,4 +214,8 @@ p {
 .edge-arrow-group { --hit: max(44px, calc(80px * var(--ui))); width: var(--hit); height: var(--hit); }
 .grid-item {
   font-size: calc(1rem * var(--ui));
+}
+.grid-link svg { width: calc(24px * var(--ui)); height: calc(24px * var(--ui)); flex-shrink: 0;}
+.grid-link {
+  font-size: calc(0.8rem * var(--ui))
 }
