@@ -33,6 +33,7 @@ export type PortfolioBallCallbacks = {
   onFrontFaceChange?: (faceId: number) => void;
   onAnimatingChange?: (animating: boolean) => void;
   onIntroComplete?: () => void;
+  onCameraChange?: () => void;
 };
 
 function easeInOutCubic(t: number): number {
@@ -94,6 +95,7 @@ export class PortfolioBall {
   private readonly onFrontFaceChange?: (faceId: number) => void;
   private readonly onAnimatingChange?: (animating: boolean) => void;
   private readonly onIntroComplete?: () => void;
+  private readonly onCameraChange?: () => void; 
   private readonly radius = 3;
 
   private readonly faces: FootballFace[];
@@ -105,6 +107,26 @@ export class PortfolioBall {
   private renderer!: THREE.WebGLRenderer;
   private ballGroup!: THREE.Group;
   private resizeHandler!: () => void;
+
+  private zoomTarget = 1;   // what the user asked for
+  private zoomCurrent = 1;  // eased value
+  private readonly ZOOM_MIN = 0.7;
+  private readonly ZOOM_MAX = 1.6;
+  private wheelHandler!: (e: WheelEvent) => void; 
+
+  private bindZoom(): void {
+  this.wheelHandler = (e: WheelEvent) => {
+    e.preventDefault(); // stop page scroll
+    const factor = Math.exp(-e.deltaY * 0.0015); // smooth for mouse wheel and trackpad
+    this.zoomTarget = THREE.MathUtils.clamp(
+      this.zoomTarget * factor,
+      this.ZOOM_MIN,
+      this.ZOOM_MAX,
+    );
+  };
+  // passive: false is required for preventDefault to work
+  this.renderer.domElement.addEventListener('wheel', this.wheelHandler, { passive: false });
+}
 
   private disposeMaterial(
   material: THREE.Material | THREE.Material[],
@@ -145,6 +167,7 @@ export class PortfolioBall {
     this.onFrontFaceChange = callbacks.onFrontFaceChange;
     this.onAnimatingChange = callbacks.onAnimatingChange;
     this.onIntroComplete = callbacks.onIntroComplete;
+    this.onCameraChange = callbacks.onCameraChange;
 
     this.faces = buildFootballFaces(this.radius);
     this.edgeNeighbors = buildEdgeNeighbors(this.faces);
@@ -152,6 +175,7 @@ export class PortfolioBall {
     this.initScene();
     this.buildBall();
     this.bindResize();
+    this.bindZoom();
     this.startIntroZoom();
 
     this.tick = this.tick.bind(this);
@@ -367,6 +391,17 @@ export class PortfolioBall {
         this.introAnim = null;
         this.onIntroComplete?.();
       }
+
+        const prev = this.zoomCurrent;
+      this.zoomCurrent += (this.zoomTarget - this.zoomCurrent) * 0.15; // easing
+      if (Math.abs(this.zoomTarget - this.zoomCurrent) < 0.0005) {
+        this.zoomCurrent = this.zoomTarget;
+      }
+
+      if (this.zoomCurrent !== prev) {
+        this.camera.position.z = this.getBaseZ() / this.zoomCurrent;
+        this.onCameraChange?.();
+      }
     }
 
     if (this.animation) {
@@ -421,6 +456,7 @@ export class PortfolioBall {
     });
 
     this.renderer.dispose();
+    this.container.removeEventListener('wheel', this.wheelHandler);
 
     if (this.renderer.domElement.parentNode === this.container) {
       this.container.removeChild(this.renderer.domElement);

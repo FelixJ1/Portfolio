@@ -26,13 +26,13 @@ const portfolioTree: PortfolioNode = {
   id: 'root',
   type: 'text',
   title: 'Welcome',
-  body: 'I am a second year economics student at UCL with a passion for technology. This is a site I built with three.js to display some of my projects and experience. I hope you enjoy...',
+  body: "Hi, I'm Felix, a second year economics student at UCL with a passion for technology. This is a site I built with three.js to display some of my projects. I hope you enjoy...",
   children: [
     {
       id: 'sudokusmart',
       type: 'text',
       title: 'SudokuSmart',
-      body: 'An iOS Sudoku application built with SwiftUI and SwiftData.',
+      body: 'As a school project, I built a mobile interface that could offer guidance on any sudoku. At the time, I was playing lots of mobile sudoku apps but was disappointed with their help features. After teaching myself Swift, I published SudokuSmart iOS in December 2024. Later, I learnt how to integrate Firebase and cloud functions. Now, the app has over 2,500 first-time downloads, over 100 ratings worldwide (averaging 4.7/5 stars) and countless features over the mainstream, including friends and global leaderboards. I still update the app every month, bringing new content and improvements.',
       backgroundSrc: '/sudokusmartMonotone.svg',
       children: [
         {
@@ -87,7 +87,7 @@ const portfolioTree: PortfolioNode = {
       id: 'ucl-efs',
       type: 'text',
       title: 'UCL EFS',
-      body: 'Economics and Finance Society.',
+      body: "In October 2025 I was appointed Technology Executive for UCL's Economics & Finance Society. In this role, I completely rebuilt a flawed ticketing system, saving the society over $200/month. This work was rewarded with my appointment to Director of Technology in May earlier this year. In this role, I have already moved the website from Webflow to JS+React (~$300 annuall savings), and begun work on the society's first internal website, including an events management system, reimbursements tracker, and analytics dashboard.",
       backgroundSrc: '/efsMonotone.svg',
       children: [
         {
@@ -140,9 +140,9 @@ const portfolioTree: PortfolioNode = {
     {
       id: 'web-development',
       type: 'text',
-      title: 'Other websites',
+      title: 'Freelance projects',
       shortTitle: 'Other',
-      body: 'Responsive websites and interactive front-end experiences built with React and JavaScript.',
+      body: 'Since 2026 summer I have been building websites as an amateur freelancer. Combining my expertise across ideation and implementation, I have designed and built digital websites for people in my close network.',
       children: [
         {
           id: 'links',
@@ -182,7 +182,25 @@ const portfolioTree: PortfolioNode = {
         },
       ],
     },
+    {
+      id: 'contact',
+      type: 'links',
+      title: 'Contact',
+      links: [{
+          imageSrc: '/mail.webp',
+          label: 'Email',
+          url: 'mailto:felixemile23@icloud.com',
+        },
+        {
+          imageSrc: '/linkedin.webp',
+          label: 'LinkedIn',
+          url: 'https://www.linkedin.com/in/felixejohnson',
+        },        
+      ],
+      children: [],
+    },
   ],
+  
 };
 
 export default portfolioTree;
