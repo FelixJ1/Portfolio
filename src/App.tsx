@@ -115,12 +115,6 @@ export default function App(): React.JSX.Element {
   const interactionLockedRef = useRef<boolean>(true);
   const pendingNavigationRef = useRef<PendingNavigation | null>(null);
 
-  const [ready, setReady] = useState(false);
-
-useEffect(() => {
-  Promise.all([document.fonts.ready]).then(() => setReady(true));
-}, []);
-
   const [navigation, dispatchNavigation] = useReducer(
     navigationReducer,
     undefined,

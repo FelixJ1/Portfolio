@@ -107,7 +107,6 @@ export class PortfolioBall {
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;
   private ballGroup!: THREE.Group;
-  private resizeHandler!: () => void;
   private ro!: ResizeObserver;
 
   private zoomTarget = 1;   // what the user asked for
