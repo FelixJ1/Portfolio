@@ -95,6 +95,7 @@ export class PortfolioBall {
   private readonly onFrontFaceChange?: (faceId: number) => void;
   private readonly onAnimatingChange?: (animating: boolean) => void;
   private readonly onIntroComplete?: () => void;
+  private introZ = 0;
   private readonly onCameraChange?: () => void; 
   private readonly radius = 3;
 
@@ -107,6 +108,7 @@ export class PortfolioBall {
   private renderer!: THREE.WebGLRenderer;
   private ballGroup!: THREE.Group;
   private resizeHandler!: () => void;
+  private ro!: ResizeObserver;
 
   private zoomTarget = 1;   // what the user asked for
   private zoomCurrent = 1;  // eased value
@@ -374,35 +376,37 @@ export class PortfolioBall {
   }
 
   private tick(now: number): void {
-    if (this.disposed) return;
+  if (this.disposed) return;
 
-    if (this.introAnim) {
-      const elapsed = now - this.introAnim.startTime;
-      const t = Math.min(1, elapsed / this.introAnim.duration);
-      const eased = easeInOutCubic(t);
+  const base = this.getBaseZ();
+  let introJustFinished = false;
 
-      this.camera.position.z = THREE.MathUtils.lerp(
-        this.introAnim.startZ,
-        this.introAnim.endZ,
-        eased,
-      );
-
-      if (t >= 1) {
-        this.introAnim = null;
-        this.onIntroComplete?.();
-      }
-
-        const prev = this.zoomCurrent;
-      this.zoomCurrent += (this.zoomTarget - this.zoomCurrent) * 0.15; // easing
-      if (Math.abs(this.zoomTarget - this.zoomCurrent) < 0.0005) {
-        this.zoomCurrent = this.zoomTarget;
-      }
-
-      if (this.zoomCurrent !== prev) {
-        this.camera.position.z = this.getBaseZ() / this.zoomCurrent;
-        this.onCameraChange?.();
-      }
+  if (this.introAnim) {
+    const t = THREE.MathUtils.clamp(
+      (now - this.introAnim.startTime) / this.introAnim.duration,
+      0,
+      1,
+    );
+    this.introZ = THREE.MathUtils.lerp(base * 2.7, base, easeInOutCubic(t));
+    if (t >= 1) {
+      this.introAnim = null;
+      introJustFinished = true;
     }
+  }
+
+  this.zoomCurrent += (this.zoomTarget - this.zoomCurrent) * 0.15;
+  if (Math.abs(this.zoomTarget - this.zoomCurrent) < 0.0005) {
+    this.zoomCurrent = this.zoomTarget;
+  }
+
+  const z = this.introAnim ? this.introZ : base / this.zoomCurrent;
+  if (z !== this.camera.position.z) {
+    this.camera.position.z = z;
+    this.camera.updateMatrixWorld();
+    this.onCameraChange?.();
+  }
+
+  if (introJustFinished) this.onIntroComplete?.();
 
     if (this.animation) {
       const elapsed = now - this.animation.startTime;
@@ -429,17 +433,19 @@ export class PortfolioBall {
   }
 
   private bindResize(): void {
-    this.resizeHandler = () => {
-      const width = this.container.clientWidth;
-      const height = this.container.clientHeight;
-
-      this.camera.aspect = width / height;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(width, height);
-    };
-
-    window.addEventListener('resize', this.resizeHandler);
-  }
+  this.ro = new ResizeObserver(() => {
+    const w = this.container.clientWidth;
+    const h = this.container.clientHeight;
+    if (!w || !h) return;
+    this.camera.aspect = w / h;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(w, h);
+    this.camera.position.z = this.getBaseZ() / this.zoomCurrent;
+    this.camera.updateMatrixWorld();
+    this.onCameraChange?.();
+  });
+  this.ro.observe(this.container);
+}
 
   public dispose(): void {
     this.disposed = true;
@@ -448,7 +454,7 @@ export class PortfolioBall {
       window.cancelAnimationFrame(this.animationFrameId);
     }
 
-    window.removeEventListener('resize', this.resizeHandler);
+    this.ro.disconnect();
 
     this.faceMeshes.forEach((mesh) => {
       mesh.geometry.dispose();

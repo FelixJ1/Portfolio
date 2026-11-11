@@ -115,6 +115,12 @@ export default function App(): React.JSX.Element {
   const interactionLockedRef = useRef<boolean>(true);
   const pendingNavigationRef = useRef<PendingNavigation | null>(null);
 
+  const [ready, setReady] = useState(false);
+
+useEffect(() => {
+  Promise.all([document.fonts.ready]).then(() => setReady(true));
+}, []);
+
   const [navigation, dispatchNavigation] = useReducer(
     navigationReducer,
     undefined,
@@ -141,6 +147,15 @@ export default function App(): React.JSX.Element {
     setArrows(ball.getFaceEdgeArrows(faceId));
     setBox(ball.getFaceContentBox(faceId));
   }, []);
+
+  const rafRef = useRef<number | null>(null);
+const scheduleRefresh = useCallback((faceId: number) => {
+  if (rafRef.current !== null) return;
+  rafRef.current = requestAnimationFrame(() => {
+    rafRef.current = null;
+    refreshFaceUI(faceId);
+  });
+}, [refreshFaceUI]);
 
   const finishPendingNavigation = useCallback((): void => {
     const pending = pendingNavigationRef.current;
@@ -172,24 +187,28 @@ export default function App(): React.JSX.Element {
     if (!containerRef.current) return;
 
     const ball = new PortfolioBall(containerRef.current, {
-      onFrontFaceChange: (id: number) => {
-        refreshFaceUI(id);
-        setVisible(true);
-        interactionLockedRef.current = false;
-        finishPendingNavigation();
-      },
-      onAnimatingChange: (animating: boolean) => {
-        if (animating) interactionLockedRef.current = true;
-      },
-      onIntroComplete: () => {
-        const currentBall = ballRef.current;
-        if (!currentBall) return;
+  onFrontFaceChange: (id: number) => {
+    refreshFaceUI(id);
+    setVisible(true);
+    interactionLockedRef.current = false;
+    finishPendingNavigation();
+  },
+  onAnimatingChange: (animating: boolean) => {
+    if (animating) interactionLockedRef.current = true;
+  },
+  onIntroComplete: () => {
+    const currentBall = ballRef.current;
+    if (!currentBall) return;
 
-        refreshFaceUI(currentBall.getFrontFaceId());
-        setVisible(true);
-        interactionLockedRef.current = false;
-      },
-    });
+    refreshFaceUI(currentBall.getFrontFaceId());
+    setVisible(true);
+    interactionLockedRef.current = false;
+  },
+  onCameraChange: () => {
+    const b = ballRef.current;
+    if (b) scheduleRefresh(b.getFrontFaceId());
+  },
+});
 
     ballRef.current = ball;
     refreshFaceUI(ball.getFrontFaceId());
